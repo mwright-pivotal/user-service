@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers = UserController.class, secure = false)
+@WebMvcTest(controllers = UserController.class)
 public class UserControllerTest {
 
 	@MockBean

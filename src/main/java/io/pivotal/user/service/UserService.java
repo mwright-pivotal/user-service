@@ -15,10 +15,16 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,9 +51,16 @@ public class UserService {
 
     @Value("${uaa.identity-zone-id}")
     private String identityZoneId;
+    
+    @Autowired
+    private CsrfTokenRepository csrfTokenRepository;
 
     @PostConstruct
     public void init() {
+    	List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
+    	interceptors.add(new LoggingRequestInterceptor());
+    	restTemplate.setInterceptors(interceptors);
+    	
         scopes.setGroupId(scopes.getAccount(), groupIdFor(scopes.getAccount()));
         scopes.setGroupId(scopes.getBank(), groupIdFor(scopes.getBank()));
         scopes.setGroupId(scopes.getPortfolio(), groupIdFor(scopes.getPortfolio()));

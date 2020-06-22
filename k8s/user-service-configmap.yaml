@@ -6,4 +6,26 @@ data:
   application.yml: |-
     targets:
       admin:
-        uaa: uaa.default:8080
+        uaa: http://uaa.default:8080
+    uaa:
+      identity-zone-id: uaa
+    scopes:
+      trade: trade
+      account: account
+      portfolio: portfolio
+      bank: tanzu.bank
+    logging:
+      level:
+        root: DEBUG
+        org.apache.http: DEBUG
+        org.springframework.security.oauth2: DEBUG
+        org.springframework.web.client.RestTemplate: DEBUG
+    security:
+      oauth2:
+        client:
+          uaa:
+            clientId: tanzu
+            clientSecret: tanzu
+            accessTokenUri: http://uaa.default:8080/login/oauth/access_token
+            access-token-uri: http://uaa.default:8080/login/oauth/access_token
+            userAuthorizationUri: http://uaa.default:8080/login/oauth/authorize

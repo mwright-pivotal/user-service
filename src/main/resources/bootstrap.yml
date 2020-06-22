@@ -2,16 +2,15 @@ spring:
   profiles.active: local
   application:
      name: user-service
+  cloud:
+    kubernetes:
+      config:
+        name: user-service
+        namespace: cf-workloads   
 info:
   build:
     group: ${group}
     name: ${name}
     description: ${description}
     version: ${version}
-
-
-logging:
-  level:
-    org.springframework.security: DEBUG
-
 
