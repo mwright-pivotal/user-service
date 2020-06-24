@@ -16,10 +16,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.security.oauth2.client.token.OAuth2AccessTokenSupport;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
-import org.springframework.security.web.server.csrf.CsrfToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import javax.annotation.PostConstruct;
 
@@ -42,6 +44,9 @@ public class UserService {
 
     @Autowired
     private RestTemplate restTemplate;
+    
+    @Autowired
+    private WebClient webClient;
 
     @Autowired
     private Scopes scopes;
@@ -53,7 +58,7 @@ public class UserService {
     private String identityZoneId;
     
     @Autowired
-    private CsrfTokenRepository csrfTokenRepository;
+    CsrfTokenRepository csrfTokenRepository;
 
     @PostConstruct
     public void init() {
@@ -83,6 +88,8 @@ public class UserService {
 
     public String groupIdFor(String groupName) {
         ResponseEntity<UaaGroups> uaaGroupsResponseEntity = restTemplate.exchange(uaaTarget + "/Groups?filter=displayName eq \"{groupName}\"", HttpMethod.GET, getEntityWithHeaders(null), UaaGroups.class, groupName);
+        
+        
         return uaaGroupsResponseEntity.getBody().getResources().get(0).getId();
     }
 
@@ -94,11 +101,20 @@ public class UserService {
     }
 
     private HttpEntity getEntityWithHeaders(Object body) {
-        HttpHeaders headers = new HttpHeaders();
+        HttpHeaders headers = csrfHeaders();
         if (StringUtils.isNotBlank(identityZoneId)) {
             headers.set("X-Identity-Zone-Subdomain", identityZoneId);
         }
         HttpEntity entity = new HttpEntity(body,headers);
         return entity;
+    }
+    
+    public HttpHeaders csrfHeaders() {
+        CsrfToken csrfToken = csrfTokenRepository.generateToken(null);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-CSRF-TOKEN", csrfToken.getToken());
+        headers.add("Cookie", "X-Uaa-Csrf=" + csrfToken.getToken());
+
+        return headers;
     }
 }

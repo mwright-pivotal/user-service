@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -25,6 +26,7 @@ import org.springframework.security.web.csrf.CsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity
+@EnableResourceServer
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -33,13 +35,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     
     @Bean
     public CsrfTokenRepository csrfTokenRepository() {
-        return CookieCsrfTokenRepository.withHttpOnlyFalse();
+    	CookieCsrfTokenRepository.withHttpOnlyFalse().setCookieName("X-Uaa-Csrf");
+    	CsrfTokenRepository tokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+   
+    	return tokenRepository;
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable().
-                headers().cacheControl().disable()
+        http.csrf().csrfTokenRepository(csrfTokenRepository()).and()
+                .headers().cacheControl().disable()
                 .and().authorizeRequests()
                 .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
                 .anyRequest().fullyAuthenticated()
