@@ -36,7 +36,6 @@ import java.util.Map;
  * @author Simon Rowe
  */
 @Service
-@Slf4j
 public class UserService {
 
     private static final Logger logger = LoggerFactory
@@ -62,9 +61,7 @@ public class UserService {
 
     @PostConstruct
     public void init() {
-    	List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-    	interceptors.add(new LoggingRequestInterceptor());
-    	restTemplate.setInterceptors(interceptors);
+    	//restTemplate.setInterceptors(interceptors);
     	
         scopes.setGroupId(scopes.getAccount(), groupIdFor(scopes.getAccount()));
         scopes.setGroupId(scopes.getBank(), groupIdFor(scopes.getBank()));

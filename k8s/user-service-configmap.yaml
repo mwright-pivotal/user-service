@@ -6,7 +6,7 @@ data:
   application.yml: |-
     targets:
       admin:
-        uaa: http://uaa.default:8080
+        uaa: https://uaa.cf4k8s.wrightcode.io
     uaa:
       identity-zone-id: uaa
     scopes:
@@ -24,8 +24,8 @@ data:
       oauth2:
         client:
           uaa:
-            clientId: tanzu
+            clientId: tanzu_zoneadmin
             clientSecret: tanzu
-            accessTokenUri: http://uaa.default:8080/login/oauth/access_token
-            access-token-uri: http://uaa.default:8080/login/oauth/access_token
-            userAuthorizationUri: http://uaa.default:8080/login/oauth/authorize
+            accessTokenUri: http://uaa.cf4k8s.wrightcode.io/login/oauth/access_token
+            access-token-uri: http://uaa.cf4k8s.wrightcode.io/login/oauth/access_token
+            userAuthorizationUri: http://uaa.cf4k8s.wrightcode.io/login/oauth/authorize
